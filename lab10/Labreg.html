@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Selector</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  padding: 20px;
+}
+
+nav {
+  margin-bottom: 20px;
+}
+
+nav a {
+  margin-right: 10px;
+  padding: 10px;
+  font-size: 16px;
+  text-decoration: none;
+  color: #333;
+  border-radius: 5px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.page {
+  display: none;
+}
+
+.active {
+  display: block;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+  width: calc(100% - 22px);
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.result {
+  margin-top: 20px;
+  font-size: 18px;
+}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#" onclick="navigate('home')">Главная</a>
+    <a href="#" onclick="navigate('login')">Вход</a>
+    <a href="#" onclick="navigate('registration')">Регистрация</a>
+    <a href="#" onclick="navigate('fetch')">Fetch Data</a>
+    <a href="#" onclick="navigate('labs')">Лабы</a>
+  </nav>
+
+  <div id="home" class="page active">
+    <h2>Главная страница</h2>
+  </div>
+
+  <div id="login" class="page">
+    <h2>Форма входа</h2>
+    <form>
+      <label for="login-username">Имя пользователя:</label>
+      <input type="text" id="login-username" name="username" required>
+      <br>
+      <label for="login-password">Пароль:</label>
+      <input type="password" id="login-password" name="password" required>
+      <br>
+      <button type="submit">Войти</button>
+    </form>
+  </div>
+
+  <div id="registration" class="page">
+    <h2>Форма регистрации</h2>
+    <form>
+      <label for="reg-username">Имя пользователя:</label>
+      <input type="text" id="reg-username" name="username" pattern="[A-Za-z0-9]{6,20}" required>
+      <br>
+      <label for="reg-password">Пароль:</label>
+      <input type="password" id="reg-password" name="password" required>
+      <br>
+      <label for="reg-confirm-password">Подтвердите пароль:</label>
+      <input type="password" id="reg-confirm-password" name="confirm-password" required>
+      <br>
+      <button type="submit" onclick="validateRegistrationForm(event)">Зарегистрироваться</button>
+    </form>
+    <p id="registration-error"></p>
+  </div>
+
+  <div id="fetch" class="page">
+    <h2>Fetch Data</h2>
+    <input type="number" id="postId" placeholder="Enter Post ID">
+    <button onclick="fetchData()">Fetch Data</button>
+    <p id="loading" style="display:none;">Loading...</p>
+    <div id="postData"></div>
+    <div id="userData"></div>
+    <p id="error"></p>
+  </div>
+
+  <div id="labs" class="page">
+    <h2>Выберите лабораторную работу</h2>
+    <select id="labSelect">
+      <option value="1">Лабораторная работа 1</option>
+      <option value="2">Лабораторная работа 2</option>
+      <option value="3">Лабораторная работа 3</option>
+      <option value="4">Лабораторная работа 4</option>
+      <option value="6">Лабораторная работа 6</option>
+      <option value="7">Лабораторная работа 7</option>
+      <option value="9">Лабораторная работа 9</option>
+      <option value="10">Лабораторная работа 10</option>
+    </select>
+    <button onclick="showLabLink()">Показать ссылку</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function navigate(page) {
+      document.querySelectorAll('.page').forEach(div => {
+        div.classList.remove('active');
+      });
+      document.getElementById(page).classList.add('active');
+    }
+
+    function validateRegistrationForm(event) {
+      event.preventDefault();
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+      const errorElement = document.getElementById('registration-error');
+
+      if (password !== confirmPassword) {
+        errorElement.textContent = 'Пароли не совпадают';
+      } else {
+        errorElement.textContent = '';
+        alert('Регистрация успешна!');
+      }
+    }
+
+    function fetchData() {
+      const postId = document.getElementById('postId').value;
+      const loading = document.getElementById('loading');
+      const postData = document.getElementById('postData');
+      const userData = document.getElementById('userData');
+      const error = document.getElementById('error');
+
+      loading.style.display = 'block';
+      postData.innerHTML = '';
+      userData.innerHTML = '';
+      error.textContent = '';
+
+      fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(post => {
+          postData.innerHTML = `<h3>Post</h3><p>Title: ${post.title}</p><p>Body: ${post.body}</p>`;
+          return fetch(`https://jsonplaceholder.typicode.com/users/${post.userId}`);
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(user => {
+          userData.innerHTML = `<h3>User</h3><p>Name: ${user.name}</p><p>Email: ${user.email}</p>`;
+        })
+        .catch(err => {
+          error.textContent = 'Error fetching data';
+        })
+        .finally(() => {
+          loading.style.display = 'none';
+        });
+    }
+
+    function showLabLink() {
+      const labSelect = document.getElementById('labSelect');
+      const selectedLab = labSelect.value;
+      const result = document.getElementById('result');
+
+      const labLinks = {
+        "1": "https://github.com/hudwizzx/lab1html",
+        "2": "https://github.com/hudwizzx/lab2_",
+        "3": "https://github.com/hudwizzx/lab3",
+        "4": "https://github.com/hudwizzx/lab4",
+        "6": "https://github.com/hudwizzx/lab6system",
+        "7": "https://github.com/hudwizzx/lab7system",
+        "9": "https://github.com/hudwizzx/lab9",
+        "10": "https://github.com/hudwizzx/lab10",
+      };
+
+      const labLink = labLinks[selectedLab];
+
+      result.innerHTML = labLink ? `<a href="${labLink}" target="_blank">${labLink}</a>` : 'Лабораторная работа не найдена';
+    }
+  </script>
+</body>
+</html>
